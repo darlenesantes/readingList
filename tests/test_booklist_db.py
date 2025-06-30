@@ -1,0 +1,1 @@
+#Here we can test our boolist database to make sure it is correctly storing the updated reading list for our user with all of the right info
