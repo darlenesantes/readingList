@@ -1,7 +1,7 @@
 #Here we'll call the GenAI API to generate book summaries based on the book information retrieved from the Google Books API
 # Importing libraries to be used for loading the API
 from google import genai
-from config import GEMINI_API_KEY, GOOGLE_GENAI_MODEL
+from app.config import GEMINI_API_KEY, GOOGLE_GENAI_MODEL
 
 # Setting API key
 api_key = GEMINI_API_KEY
