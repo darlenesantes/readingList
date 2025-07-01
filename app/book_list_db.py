@@ -7,8 +7,6 @@ import sqlite3
 # TODO: Refactor to make unit testing easier
 # Creating the db
 BOOKS_DB = 'reading_list.db'
-<<<<<<< HEAD
-=======
 
 # Creating a connection to the database for testability
 def create_connection(db_name=BOOKS_DB):
@@ -17,7 +15,6 @@ def create_connection(db_name=BOOKS_DB):
     '''
     con = sqlite3.connect(db_name)
     return con
->>>>>>> 4af8078e33bb4762227670d746dc67d642e9601c
 
 # Function for creating table name
 def set_up(con):
