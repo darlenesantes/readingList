@@ -1,0 +1,9 @@
+#all project library dependencies are listed below
+requests
+sqlalchemy
+python-dotenv
+google-auth
+google-auth-oauthlib
+google-genai-sdk
+pytest
+unittest
