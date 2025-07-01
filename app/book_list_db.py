@@ -61,6 +61,8 @@ def update_book_status(con, book_id, status):
     '''
     Updates the status of a book in the reading list database
     '''
+    if status not in ('TBR', 'Reading', 'Read'):
+        raise ValueError("Status must be one of 'TBR', 'Reading', or 'Read'.")
     # create cursor
     cursor = con.cursor()
     # update the status of the book where id=id
