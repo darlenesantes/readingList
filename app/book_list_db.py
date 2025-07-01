@@ -3,7 +3,7 @@ import sqlite3
 
 # DON'T FORGET TO CLOSE CONNECTION IN EACH FUNCTION !!!!
 # Creating the db
-BOOKS_DB = 'books.db'
+BOOKS_DB = 'reading_list.db'
 
 # Function for creating table name
 def set_up():
