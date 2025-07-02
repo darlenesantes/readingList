@@ -59,16 +59,26 @@ def delete_book(con, book_id):
 # Function to update book status
 def update_book_status(con, book_id, status):
     '''
-    Updates the status of a book in the reading list database
+    Updates the status of a book in the reading list database (only if it exists)
+    Returns True if the book was updated, False if it was not found
     '''
-    if status not in ('TBR', 'Reading', 'Read'):
-        raise ValueError("Status must be one of 'TBR', 'Reading', or 'Read'.")
-    # create cursor
     cursor = con.cursor()
-    # update the status of the book where id=id
-    cursor.execute('''UPDATE reading_list SET status = ? WHERE id = ?''', (status, book_id))
-    # commit the changes
+    # Check existence
+    cursor.execute(
+        '''SELECT COUNT(1) FROM reading_list WHERE id = ?''',
+        (book_id,),
+    )
+    exists = cursor.fetchone()[0]
+    if not exists:
+        return False
+
+    # Perform update
+    cursor.execute(
+        '''UPDATE reading_list SET status = ? WHERE id = ?''',
+        (status, book_id),
+    )
     con.commit()
+    return True
 
 # Function to get book by title
 def get_book_id(con, title):
