@@ -153,21 +153,27 @@ def list_books(status):
         click.echo(f"Summary: {summary}\n")
 
 @cli.command(name = "update-status")
-@click.argument('book_id', type = int)
+@click.argument('index', type = int)
 @click.argument('status', type = click.Choice(["TBR", "Reading", "Read"], case_sensitive = False))
 
-def update_status(book_id, status):
+def update_status(index, status):
     """ Update the reading status of a book in your reading list by id """
     conn = get_db_connection()
-    try:
-        ok = update_book_status(conn, book_id, status)
-    finally:
+    rows = get_all_books(conn)
+
+    #Make sure index is in range
+    if index < 1 or index > len(rows):
+        click.echo(f"Invalid index. Please choose a number between 1 and {len(rows)}.")
         conn.close()
-    
+        return
+    db_id = rows[index - 1][0]
+    ok = update_book_status(conn, db_id, status)
+    conn.close()
+
     if not ok:
-        click.echo(f"Book with ID {book_id} not found.")
-        raise SystemExit(1)
-    click.echo(f"Updated book ID {book_id} status to {status}.")
+        click.echo(f"Book with ID {db_id} not found.")
+    else:
+        click.echo(f"Updated book ID {index} status to {status}.")
 
 @cli.command(name = "delete")
 @click.argument("index", type = int)
