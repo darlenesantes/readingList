@@ -12,7 +12,7 @@ import click
 from app.config import DATABASE_URL
 from app.google_books import get_top5_books
 from app.genai import generate_summary
-from app.book_list_db import create_connection, set_up, add_book, get_all_books, get_books_by_status, update_book_status
+from app.book_list_db import create_connection, set_up, add_book, get_all_books, get_books_by_status, update_book_status, get_book_id, delete_book
 
 #Store the last search so that the 'add_book' command knows which book to add
 LAST_SEARCH = Path('last_search.json')
@@ -27,8 +27,6 @@ def initialize():
     conn = get_db_connection()
     set_up(conn)
     conn.close()
-    # make sure the last search file exists
-    # LAST_SEARCH.parent.mkdir(parents=True, exist_ok=True)
 
 @click.group()
 def cli():
@@ -108,13 +106,19 @@ def add(index):
     conn = get_db_connection()
 
     try:
-        add_book(conn, table_entry["title"], table_entry["author"], table_entry["summary"])
-    except Exception as e:
-        click.echo(f"Error adding book: {e}")
-    else:
-        click.echo(f"Added \'{table_entry['title']}\' by {table_entry['author']} to your reading list.")
-    finally:
+        was_inserted = add_book(
+            conn, 
+            table_entry["title"], 
+            table_entry["author"], 
+            table_entry["summary"]
+            )
+    finally: 
         conn.close()
+    
+    if was_inserted:
+        click.echo(f"Added {table_entry['title']} by {table_entry['author']} to your reading list.")
+    else:
+        click.echo(f"{table_entry['title']} by {table_entry['author']} is already in your reading list.")
 
 @cli.command(name = "list")
 @click.option(
@@ -144,8 +148,8 @@ def list_books(status):
         return
     
     click.echo("Your reading list:\n")
-    for book_id, title, author, status, summary in rows:
-        click.echo(f"{book_id}. {title} by {author} [{status}]")
+    for index, (_db_id, title, author, status, summary) in enumerate(rows, start=1):
+        click.echo(f"{index}. {title} by {author} [{status}]")
         click.echo(f"Summary: {summary}\n")
 
 @cli.command(name = "update-status")
@@ -164,6 +168,31 @@ def update_status(book_id, status):
         click.echo(f"Book with ID {book_id} not found.")
         raise SystemExit(1)
     click.echo(f"Updated book ID {book_id} status to {status}.")
+
+@cli.command(name = "delete")
+@click.argument("index", type = int)
+
+def delete(index):
+    "Delete a book from your reading list by its position index in your current list"
+    conn = get_db_connection()
+    rows = get_all_books(conn)
+    #Make sure index is in range
+    if index < 1 or index > len(rows):
+        click.echo(f"Invalid index. Please choose a number between 1 and {len(rows)}.")
+        conn.close()
+        return
+    #Map the books to their real PK ids
+    db_id = rows[index - 1][0]
+
+    #Try to delete the book
+    deleted = delete_book(conn, db_id)
+    conn.close()
+
+    if not deleted:
+        click.echo(f"No book with ID {db_id} found in your reading list.")
+    else:
+        click.echo(f"Deleted book with ID {index} from your reading list.")
+    conn.close()
 
 def get_attr(name):
     """ Dynamic attribute access for tests """

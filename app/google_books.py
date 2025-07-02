@@ -36,7 +36,7 @@ def get_top5_books(query: str) -> List[Dict]:
                     "authors": book_info.get("authors", []),
                 })
     
-    #search by title first
+    #Search by title first
     fetch_and_add({
         'q': f'intitle:{query}',
         'key': GOOGLE_BOOKS_KEY,
@@ -51,4 +51,4 @@ def get_top5_books(query: str) -> List[Dict]:
             'maxResults': 5 - len(results),
         })
     
-    return results[:5]  # Return only the top 5 result
+    return results[:5]

@@ -1,4 +1,4 @@
-# File: setup.py
+# Package setup script for the reading list CLI 
 from setuptools import setup, find_packages
 
 setup(

@@ -32,29 +32,43 @@ def set_up(con):
                     ''')
     con.commit()
 
-# Function for adding a book
+# Function for adding a book 
 def add_book(con, title, author, desc):
     '''
-    Adds book to reading list database
+    Adds book to reading list database if it does not already exist
+    If the book already exists, it will not be added again.
     '''
     cursor = con.cursor()
-    # cursor.execute: insert the information except for index
-    cursor.execute('''INSERT INTO reading_list (title, author, summary)
-                    VALUES (?, ?, ?)''', (title, author, desc))
-    # commit the changes
+    #Check if the book already exists
+    cursor.execute(
+        "SELECT 1 FROM reading_list WHERE title = ? AND author = ?",
+        (title, author),
+    )
+    if cursor.fetchone() is not None:
+        #Book already exists, do not add it again
+        return False
+    #Otherwise, insert the book into the database
+    cursor.execute(
+        "INSERT INTO reading_list (title, author, summary) VALUES (?, ?, ?)",
+        (title, author, desc),
+    )
     con.commit()
+    return True  
 
 # Function for deleting a book
 def delete_book(con, book_id):
     '''
     Deletes book from database by its unique ID (primary key)
     '''
-    # create cursor
+    # Create cursor
     cursor = con.cursor()
-    # delete from tablename where id=id
-    cursor.execute('''DELETE FROM reading_list WHERE id = ?''', (book_id,))
-    # commit the changes
+    # Check if the book exists
+    cursor.execute("SELECT 1 FROM reading_list WHERE id = ?", (book_id,))
+    if cursor.fetchone() is None:
+        return False
+    cursor.execute("DELETE FROM reading_list WHERE id = ?", (book_id,))
     con.commit()
+    return True
 
 # Function to update book status
 def update_book_status(con, book_id, status):

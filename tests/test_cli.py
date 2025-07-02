@@ -79,3 +79,23 @@ def test_update_status():
     assert "Book C" in result_reading.output
     result_tbr = runner.invoke(cli, ["list", "--status", "TBR"])
     assert "Book C" not in result_tbr.output
+
+def test_delete_book():
+    #Insert a book to delete
+    conn = cli_module.get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO reading_list (title, author, status, summary) VALUES (?, ?, ?, ?)",
+                ("Book D","Author D","TBR","Summary D"))
+    conn.commit()
+    book_id = cursor.lastrowid
+    conn.close()
+
+    runner = CliRunner()
+    #Delete the book
+    result = runner.invoke(cli, ["delete", str(book_id)])
+    assert result.exit_code == 0
+    assert f"Deleted book with ID {book_id} from your reading list." in result.output
+
+    #Check if the book was actually deleted
+    result_list = runner.invoke(cli, ["list"])
+    assert f"Book D by Author D [TBR]" not in result_list.output
