@@ -1,6 +1,6 @@
 #Here we can test our booklist database to make sure it is correctly storing the updated reading list for our user with all of the right info
 import unittest
-from app.book_list_db import create_connection, set_up, add_book, delete_book, get_book_id, get_all_books, get_books_by_status
+from app.book_list_db import create_connection, set_up, add_book, delete_book, update_book_status, get_book_id, get_all_books, get_books_by_status
 
 class TestBookListDB(unittest.TestCase):
     '''
@@ -81,3 +81,13 @@ class TestBookListDB(unittest.TestCase):
         add_book(self.con, "Book A", "Author A", "Summary A")
         book_id = get_book_id(self.con, "Book A")
         self.assertIsNotNone(book_id)
+
+    def test_update_book_status_not_valid(self):
+        '''
+        Test updating the status of a book without valid status.
+        '''
+        add_book(self.con, "Book A", "Author A", "Summary A")
+        book_id = get_book_id(self.con, "Book A")
+        self.assertIsNotNone(book_id)
+        with self.assertRaises(ValueError):
+            update_book_status(self.con, book_id, "InvalidStatus")

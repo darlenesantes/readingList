@@ -56,7 +56,7 @@ def delete_book(con, book_id):
     # commit the changes
     con.commit()
 
-# Function to update book statusAdd commentMore actions
+# Function to update book status
 def update_book_status(con, book_id, status):
     '''
     Updates the status of a book in the reading list database (only if it exists)
