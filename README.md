@@ -1,7 +1,7 @@
 # BookBase
 A command-line interface (CLI) tool to search for books, generate AI-powered summaries, and manage your personal reading list with status tracking.
 
-Built with Python, the Google Books API, AI summary generation, and SQLite for local data storage.
+Built with Python, the Google Books API, Google GenAI, and SQLite for local data storage.
 
 ## Features
 - Search for books via Google Books API and view the top 5 results with AI-generated summaries
@@ -21,9 +21,16 @@ Built with Python, the Google Books API, AI summary generation, and SQLite for l
 
 2. Create and activate a Python virtual environment (recommended):
 
+### macOS:
 ```
 source venv/bin/activate
 ```
+
+### Windows:
+```
+venv\Scripts\activate
+```
+
 3. Install the package in editable mode. This will install your package and all required dependencies:
 
 ```
