@@ -4,7 +4,6 @@
 import sqlite3
 
 # DON'T FORGET TO CLOSE CONNECTION AFTER WE ARE DONE MAKING CHANGES TO DB !!!!
-# TODO: Refactor to make unit testing easier
 # Creating the db
 BOOKS_DB = 'reading_list.db'
 
@@ -56,6 +55,30 @@ def delete_book(con, book_id):
     cursor.execute('''DELETE FROM reading_list WHERE id = ?''', (book_id,))
     # commit the changes
     con.commit()
+
+# Function to update book statusAdd commentMore actions
+def update_book_status(con, book_id, status):
+    '''
+    Updates the status of a book in the reading list database (only if it exists)
+    Returns True if the book was updated, False if it was not found
+    '''
+    cursor = con.cursor()
+    # Check existence
+    cursor.execute(
+        '''SELECT COUNT(1) FROM reading_list WHERE id = ?''',
+        (book_id,),
+    )
+    exists = cursor.fetchone()[0]
+    if not exists:
+        return False
+
+    # Perform update
+    cursor.execute(
+        '''UPDATE reading_list SET status = ? WHERE id = ?''',
+        (status, book_id),
+    )
+    con.commit()
+    return True
 
 # Function to get book by title
 def get_book_id(con, title):

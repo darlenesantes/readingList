@@ -4,6 +4,7 @@ sqlalchemy
 python-dotenv
 google-auth
 google-auth-oauthlib
-google-genai-sdk
+google-genai
 pytest
 unittest
+click
