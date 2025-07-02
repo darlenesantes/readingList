@@ -13,7 +13,7 @@ def get_top5_books(query: str) -> List[Dict]:
     """
     if not query:
         return []
-    
+
     results = []
     seen_ids = set()  # To avoid duplicates
 
@@ -35,7 +35,7 @@ def get_top5_books(query: str) -> List[Dict]:
                     "title": book_info.get("title", "No title available"),
                     "authors": book_info.get("authors", []),
                 })
-    
+
     #Search by title first
     fetch_and_add({
         'q': f'intitle:{query}',
@@ -50,5 +50,5 @@ def get_top5_books(query: str) -> List[Dict]:
             'key': GOOGLE_BOOKS_KEY,
             'maxResults': 5 - len(results),
         })
-    
+
     return results[:5]

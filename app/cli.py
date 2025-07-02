@@ -1,9 +1,11 @@
-#Getting rid of weird warnings in the terminal
+# Getting rid of weird warnings in the terminal
 import warnings
 from urllib3.exceptions import NotOpenSSLWarning
 warnings.filterwarnings("ignore", category=NotOpenSSLWarning)
 
-#Here we can set up the command line interface - make sure we search for a book, add a book to the list, and retrieve the list from the db
+# Here we can set up the command line interface
+# make sure we search for a book, add a book to the list,
+# and retrieve the list from the db
 import json
 from pathlib import Path
 
@@ -22,11 +24,13 @@ def get_db_connection():
     conn = create_connection()
     return conn
 
+
 def initialize():
     """ Make sure the database table exists """
     conn = get_db_connection()
     set_up(conn)
     conn.close()
+
 
 @click.group()
 def cli():
@@ -42,18 +46,18 @@ def search(query):
     if not q:
         click.echo("Please provide a search query!")
         return
-    
+
     #Get top 5 query results
     try:
         books = get_top5_books(q)
     except Exception as e:
         click.echo(f"Error fetching books: {e}")
         return
-    
+
     if not books:
         click.echo(f"No results found for '{q}'. Please try a different query!")
         return
-    
+
     data = []
     click.echo(f"Top {len(books)} results for \'{q}\':\n")
     #Get ai summaries for each book
@@ -85,7 +89,7 @@ def search(query):
     #Store the last search results to a file
     with open(LAST_SEARCH, 'w') as file:
         json.dump(data, file, indent=4)
-    
+
     click.echo("Run 'bookclub add <number>' to save one of these books to your reading list!")
 
 @cli.command()
@@ -96,12 +100,12 @@ def add(index):
     if not LAST_SEARCH.exists():
         click.echo("No previous search results found. Please run 'bookclub search <query>' first!")
         return
-    
+
     data = json.loads(LAST_SEARCH.read_text())
     if index < 1 or index > len(data):
         click.echo(f"Invalid index. Please choose a number between 1 and {len(data)}.")
         return
-    
+
     table_entry = data[index - 1]
     conn = get_db_connection()
 
@@ -114,11 +118,12 @@ def add(index):
             )
     finally: 
         conn.close()
-    
+
     if was_inserted:
         click.echo(f"Added {table_entry['title']} by {table_entry['author']} to your reading list.")
     else:
-        click.echo(f"{table_entry['title']} by {table_entry['author']} is already in your reading list.")
+        click.echo(f"{table_entry['title']} by {table_entry['author']} "
+                   f"is already in your reading list.")
 
 @cli.command(name = "list")
 @click.option(
@@ -129,7 +134,9 @@ def add(index):
 
 
 def list_books(status):
-    """ List all books in reading list along with their ai summaries - optionally filtered by status"""
+    """ 
+    List all books in reading list along with their ai summaries - optionally filtered by status
+    """
     conn = get_db_connection()
 
     try:
@@ -142,11 +149,11 @@ def list_books(status):
         return
     finally:
         conn.close()
-    
+
     if not rows:
         click.echo("Your reading list is empty!")
         return
-    
+
     click.echo("Your reading list:\n")
     for index, (_db_id, title, author, status, summary) in enumerate(rows, start=1):
         click.echo(f"{index}. {title} by {author} [{status}]")
@@ -199,6 +206,7 @@ def delete(index):
     else:
         click.echo(f"Deleted book with ID {index} from your reading list.")
     conn.close()
+
 
 def get_attr(name):
     """ Dynamic attribute access for tests """

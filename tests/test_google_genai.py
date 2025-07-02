@@ -31,3 +31,12 @@ class TestGenAISummary(unittest.TestCase):
         long_author = "A Ridiculously Long Author Name That Barely Fits On a Book Cover"
         summary = generate_summary(long_title, long_author)
         self.assertIn("summary", summary.lower())
+
+    @patch('app.genai.client.models.generate_content')
+    def test_empty_api_response(self, mock_generate_content):
+        mock_response = MagicMock()
+        mock_response.text = ""
+        mock_generate_content.return_value = mock_response
+
+        summary = generate_summary("Book Title", "Author Name")
+        self.assertEqual(summary, "")  # Or however you choose to handle it
