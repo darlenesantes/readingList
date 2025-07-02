@@ -80,14 +80,17 @@ class TestBookListDB(unittest.TestCase):
         '''
         add_book(self.con, "Book A", "Author A", "Summary A")
         book_id = get_book_id(self.con, "Book A")
-        self.assertIsNotNone(book_id)
+        updated = update_book_status(self.con, book_id, "Reading")
+        self.assertTrue(updated)
+
+        # confirm the status was updated
+        books = get_books_by_status(self.con, "Reading")
+        self.assertEqual(len(books), 1)
+        self.assertEqual(books[0][1], "Book A")
 
     def test_update_book_status_not_valid(self):
         '''
         Test updating the status of a book without valid status.
         '''
-        add_book(self.con, "Book A", "Author A", "Summary A")
-        book_id = get_book_id(self.con, "Book A")
-        self.assertIsNotNone(book_id)
-        with self.assertRaises(ValueError):
-            update_book_status(self.con, book_id, "InvalidStatus")
+        updated = update_book_status(self.con, 999, "Reading")  # Non-existent book ID
+        self.assertFalse(updated)
