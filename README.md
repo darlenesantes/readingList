@@ -59,7 +59,7 @@ Search for books matching \<query> using the Google Books API. Shows top 5 resul
 #### Example:
 
 ```
-bookclub search harry potter
+bookclub search "harry potter"
 ```
 
 ### add \<number>
@@ -90,8 +90,8 @@ Update the reading status of a book in your reading list by its database ID.
 ```
 bookclub update-status 3 Reading
 ```
-### delete \<index>
-Delete a book from your reading list by its position index in the current list.
+### delete \<book_id>
+Delete a book from your reading list by its database ID.
 
 #### Example:
 
